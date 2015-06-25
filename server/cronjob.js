@@ -31,22 +31,24 @@ var cronjob = new CronJob(schedule, function() {
           .then(function(url) {
             // display html that are changed
             for (var i = 0; i < url.length; i++) {
-              getExternalUrl(url[i], function(newHtml, url) {
-                newHtml = newHtml.substring(3000, 4000);
+              getExternalUrl(url[i], function(newImage, url) {
                 if (url) {
-                  var oldHtml = url.UserUrl.html;
-                  if (!(oldHtml === newHtml)) {
-                    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-                    console.log('there is a change at', url.url,'!')
+                  // the old image value that is stored
+                  var oldImage = url.UserUrl.cropImage;
 
-                    // send email
-                    // sendEmail(currEmail, currEmail);
+                  // Compare images here
+                  // if (!(oldHtml === newHtml)) {
+                  //   console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+                  //   console.log('there is a change at', url.url,'!')
+
+                  //   // send email
+                  //   // sendEmail(currEmail, currEmail);
 
 
-                    // update html value in database
+                  //   // update html value in database
 
 
-                  }
+                  // }
                 }
               });
               
