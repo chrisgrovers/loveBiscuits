@@ -1,4 +1,4 @@
-var ocr = require('../controllers/ocr.js');
+var ocr = require('../controllers/ocrController.js');
 var should = require('should');
 var assert = require('assert');
 var expect = require('expect.js');
@@ -9,6 +9,7 @@ describe('Image-to-text conversion', function(){
   it('should return error if invalid path is input', function(done){
     url = 'fakePath'; 
     ocr.convertImageToText(path + url, function(error, text){
+      console.log('errr', error, text);
       expect(!!error).to.equal(true);
       done();
     });
@@ -52,3 +53,4 @@ describe('Image-to-text conversion', function(){
   });
 
 });
+

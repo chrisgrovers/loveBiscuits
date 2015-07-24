@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:url('fonts/icomoon.eot?-3gxmn9');
-  src:url('fonts/icomoon.eot?#iefix-3gxmn9') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?-3gxmn9') format('truetype'),
-    url('fonts/icomoon.woff?-3gxmn9') format('woff'),
-    url('fonts/icomoon.svg?-3gxmn9#icomoon') format('svg');
+  src:url('fonts/icomoon.eot?knydm1');
+  src:url('fonts/icomoon.eot?#iefixknydm1') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?knydm1') format('truetype'),
+    url('fonts/icomoon.woff?knydm1') format('woff'),
+    url('fonts/icomoon.svg?knydm1#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -28,6 +28,9 @@
 }
 .icon-history:before {
   content: "\e94d";
+}
+.icon-bin:before {
+  content: "\e9ac";
 }
 .icon-checkmark2:before {
   content: "\ea11";
@@ -55,11 +58,22 @@ header {
   width: 100%;
   text-align: center;
   line-height: 50px;
-  height: 50px;
   font-weight: bold;
   color: #000;
   font-size: 30px;
 }
+header img {
+  margin: 25px auto -15px;
+}
+
+.scrape__animation {
+  width: 300px;
+  height: 700px;
+  background-image:  url('/app/images/scrape2.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+}
+
 .table {
   width: 100%;
 }
@@ -138,12 +152,11 @@ header {
   box-sizing:border-box;
   width: 15%;
   min-height: 25px;
-  max-height: 75px;
   line-height: 25px;
   padding: 10px;
   text-align: center;
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: top;
   word-wrap: break-word;
 }
 
@@ -161,6 +174,16 @@ header {
 .table__row .remove__url {
   color: #b54b3a;
   cursor: pointer;
+  font-size: 27px;
+  -ms-transform: scale(6); /* IE 9 */
+  -webkit-transform: scale(6); /* Safari */
+  transform: scale(6);
+}
+
+.more, .less {
+  color: #b54b3a;
+  font-size: 0.9em;
+  cursor: pointer;
 }
 
 .scrapping {
@@ -169,12 +192,8 @@ header {
 }
 
 .scrapping span {
-  font-size: 100px;
-  color: #333;
   animation: scrapping 3s infinite;
   display: block;
-  width: 120px;
-  height: 120px;
   margin: 20px auto;
 }
 
@@ -247,10 +266,12 @@ header {
   width: 150px;
   font-size: 16px;
   background-color: #b54b3a;
+  border: 1px solid rgba(255,255,255,0.4) !important;
   color: #fff;
-  cursor: pointer;  
+  cursor: pointer;
   border: 0px;
   border-radius: 0px 7px 7px 0px;
+  font-weight: bold;
 }
 
 .switch.checked {
@@ -286,10 +307,8 @@ header {
 }
 
 #logout {
-  text-align: right;
   margin: 10px 0px 20px 0px;
-  display: inline-block;
-  width: 50%;
+  display: block;
   box-sizing: border-box;
   text-align: right;
   vertical-align: top;
@@ -304,7 +323,7 @@ header {
   border-radius: 24px;
   -moz-border-radius: 24px;
   -webkit-border-radius: 24px;
-  padding: 50px;
+  padding: 50px 50px 40px;
   background-color: rgba(255,255,255,0.4);
   background-image: url('/app/images/crossword.png');
   z-index: 200;
@@ -323,12 +342,11 @@ header {
 
 
 h1 {
-  font-size: 450%;
+  font-size: 250%;
   font-family: 'Archivo Narrow';
   margin: 0;
   text-align: center;
    color:black;
-   letter-spacing: 2px;
   -moz-transition-property: color;  /* FF4+ */
   -moz-transition-duration: 2s;
   -webkit-transition-property: color;  /* Saf3.2+, Chrome */
@@ -339,7 +357,7 @@ h1 {
   -ms-transition-duration: 2s;
   transition-property: color;  /* Standard */
   transition-duration: 2s;
-
+  line-height: 1;
 }
 h1:hover {
  color:  #b34332;
@@ -500,8 +518,7 @@ button {
     display:inline-block;
     cursor:pointer;
     color:#ffffff;
-    font-family:Arial;
-    font-size:15px;
+    font-size:17px;
     font-weight:bold;
     padding:9px 23px;
     text-decoration:none;
@@ -689,8 +706,12 @@ button {
     border-radius: 7px;
     -khtml-border-radius: 7px; /* for old Konqueror browsers */
     padding: 6px !important;
-    font-size: 10px !important;
+    font-size: 17px !important;
     border-radius: 6px !important;
+    padding: 0 10px;
+    letter-spacing: 2px;
+    font-family: 'Archivo Narrow';
+    border: 1px solid rgba(255,255,255, 0.5);
 }
 
 #submit-button {
@@ -890,6 +911,9 @@ table.gradienttable td{
     transform: translate(-50%, -50%)
     }
 
+#switching {
+  margin: 0 25px 0 -25px;
+}
 .switch small {
     background: #E05050;
 }
@@ -897,4 +921,125 @@ table.gradienttable td{
 .switch.checked {
   background: #171A17;
   border-color: #5A5A5A;
+}
+
+#options-panel {
+  text-align: center;
+
+  margin: 0 100px 20px;
+}
+#options-panel > table {
+  background-color: rgba(135,206,232,0.4);
+  border-radius: 30px;
+  margin: 0 auto;
+}
+#options-panel table td {
+  vertical-align: middle;
+  text-align: left;
+  padding: 5px 10px;
+}
+#options-panel > table td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 5px 10px;
+}
+#options-panel select {
+  line-height: 2;
+  font-size: 22px;
+  -webkit-appearance: menulist-button;
+}
+
+#comingSoon img {
+
+  border: 2px solid black;
+}
+h3 {
+  font-style: ;
+}
+h2 {
+  text-decoration: underline;
+    color: #b34332;
+    margin-bottom: 0;
+}
+
+#welcomeDirections div {
+  background-color: rgba(255,255,255,0.6);
+  padding: 8px auto 0;
+  width: 98%;
+}
+.shadowplz {
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.4);
+}
+#welcomeDirections table {
+  width: 100%;
+  border: 1
+}
+#welcomeDirections * {
+  border: 0px solid black;
+}
+#welcomeDirections td {
+  text-align: center;
+}
+#welcomeDirections h1 {
+  font-size: 22px;
+}
+#welcomeDirections h2 {
+  text-decoration: none;
+}
+#welcomeDirections a:link, #welcomeDirections a:visited {
+  font-size: 26px;
+  line-height: 3;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 4px dotted DarkRed;
+  margin: 1em 0;
+  padding: 0;
+}
+
+
+.ngdialog.ngdialog-theme-plain .ngdialog-content {
+  background-color: transparent !important;
+  color: #444;
+  font-family: 'Helvetica Neue',sans-serif;
+  font-size: 1.1em;
+  line-height: 1.5em;
+  margin: 0 25% !important;
+  padding: 1em;
+  position: relative;
+  width: 50% !important;
+}
+
+.ngdialog.ngdialog-theme-plain .ngdialog-content > img {
+  width: 95%;
+  display: block;
+  margin: 0 auto;
+}
+
+.ngdialog.ngdialog-theme-plain .ngdialog-close:before {
+  background: transparent;
+  color: #bbb;
+  content: "\00D7";
+  font-size: 26px;
+  font-weight: 400;
+  height: 30px;
+  line-height: 26px;
+  position: absolute;
+  right: 3px;
+  text-align: center;
+  top: 3px;
+  width: 30px;
+}
+#infoText {
+  margin-bottom: 10px;
+}
+
+#screenimg, #infoText {
+  display: none;
+}
+#loadingpage {
+  margin-top: 15px;
 }

@@ -1,11 +1,10 @@
 var db = require('../db');
 var bcrypt = require('bcrypt');
+
 module.exports = {
+
   login: function (req, res, next) {
-
     var user = req.body;
-
-    //console.log("logging in as " + user);
     db.User.findOne({
       where: {
         email: user.email
@@ -58,5 +57,6 @@ module.exports = {
     req.session.email = null;
     res.send('Logout successful');
   }
-
 };
+
+

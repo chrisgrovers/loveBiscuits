@@ -7,7 +7,8 @@ angular.module('app', [
   'app.routes',
   'app.user',
   'app.home',
-  'ui.router'
+  'ui.router',
+  'ngDialog'
 ])
 .controller('appController', function($scope) {
 })
@@ -30,8 +31,8 @@ angular.module('app', [
 .run(function ($rootScope, $state, Auth) {
   $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
     Auth.isLoggedIn(function(loggedIn) {
-      if (toState.auth && !loggedIn) {
-        $state.go('login');
+      if (toState.auth && !loggedIn && toState.name !== "login" && toState.name !== "signup" ) {
+        $state.go('welcome');
       }
     });
   });

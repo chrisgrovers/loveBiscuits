@@ -1,36 +1,34 @@
-var basicScraper = require('./basicScraperController');
-var getExternalUrl = require('./urlController').getExternalUrl;
+var compare = require('../imgCompare.js').compare;
 var CronJob = require('cron').CronJob;
 var CronJobManager = require('cron-job-manager');
-var secret = require('../../config.js');
-var db = require('../db.js');
-var Sequelize = require('sequelize');
-var compare = require('../imgCompare.js').compare;
+var db = require('../db');
+var compareUtils = require('../utils/cron');
 var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-    service: 'mailgun',
-    auth: secret.auth
-});
-
-
+var fs = require('fs');
+var ocr = require('./ocrController.js');
+var secret = require('../../config.js');
+var Sequelize = require('sequelize');
 var manager = new CronJobManager();
 
 module.exports = {
+
   startAllCron: function() {
     console.log('starting all cronjobs');
     db.User.findAll()
     .then(function(allUsers) {
-      for (var i = 0; i < allUsers.length; i++){
+      for (var i = 0; i < allUsers.length; i++) {
         allUsers[i].getUrls()
         .then(function(url) {
-          for (var j=0; j<url.length; j++){
+          for (var j=0; j<url.length; j++) {
              var userUrl = url[j].UserUrl;
-             var active = userUrl.status;
-             var url = url[j].url;
-             if (active) {
-               console.log('watching ' + url + ' for ' + userUrl.email)
-               module.exports.addCron(userUrl, url);
-             }; // if (active)
+
+             module.exports.startCron(userUrl.user_id, userUrl.url_id);
+             // var active = userUrl.status;
+             // var url = url[j].url;
+             // if (active) {
+             //   console.log('watching ' + url + ' for ' + userUrl.email)
+             //   module.exports.addCron(userUrl, url);
+             // }; // if (active)
           }; // for loop iterating over each url for a user
         }); // .then(function(url){
       }; // or (var i = 0; i < allUsers.length; i++){
@@ -38,29 +36,23 @@ module.exports = {
   },
 
   addCron: function(UserUrl, url) {
+
     UserUrl.status = true;
-    var userUrl = UserUrl;
+
     var key = UserUrl.url_id.toString() + UserUrl.user_id.toString();
-    console.log('Starting cronJob', key);
-    var action = UserUrl.compare || 'image';
+    var freq = UserUrl.frequency;
+    var action = UserUrl.compare || 'Image';
 
-    // hours
-    // var freq = '* * */' + UserUrl.frequency + ' * * *';
-
-    // minutes
-    // var freq = '* */' + UserUrl.frequency + ' * * * *';
-
-    var freq = '* * * 1 * *';
-
-    // FOR TEST PURPOSES ONLY seconds
-    // var freq = '*/' + UserUrl.frequency + ' * * * * *';
+    console.log('Starting cronJob', key, 'for', url, ' with frequency ', freq);
 
     if (manager.exists(key)) {
       manager.deleteJob(key);
     };
+
     manager.add(key, freq, function() {
       if (UserUrl.status) {
-        console.log('checking', url, 'for', UserUrl.email);
+        UserUrl.lastScrape = compareUtils.getDate();
+
          var oldImg = UserUrl.cropImage;
          var email = UserUrl.email;
          var params = {
@@ -70,14 +62,105 @@ module.exports = {
           y: UserUrl.cropOriginY
         };
 
-        // TODO: 
-        // check userUrl if comparing screenshot or ocr values?
-        // if (UserUrl.) {
-          // compareUtils.compareOCR(value, value, value);
-        // }
-        // compares screenshot, sends email if there is a difference in image
+         UserUrl.lastScrape = compareUtils.getDate();
 
-        compareUtils.compareScreenShot(UserUrl, url, email, params, oldImg);
+        var sendOption = UserUrl.filter === 'null' ? UserUrl.comparison : UserUrl.filter;
+
+        if (UserUrl.comparison === 'Text') {
+          compareUtils.compareOCR(UserUrl, url, email, params, oldImg, function(oldImg, newImg, newVal) {
+            // if images are not equal, send an email
+            
+            // if we enter the anonymous function, we can assume images are not equal
+            if (UserUrl.stopAfterChange) {
+              // set status to false since we are stopping the cronjob
+              UserUrl.status = false;
+              // stop cronjob
+              module.exports.stopCron(UserUrl.user_id, UserUrl.url_id)
+            } else {
+              // update image and value
+              UserUrl.updateAttributes({
+                ocrText: newVal
+              })
+              fs.rename(newImg, oldImg, function(err) {
+                if (err) {
+                  console.log('ERROR:', err);
+                }
+              })
+            }
+            compareUtils.sendEmail(url, email, oldImg, newImg, sendOption, UserUrl);
+          });
+        } else if (UserUrl.comparison === 'Image') {
+          compareUtils.compareScreenShot(UserUrl, url, email, params, oldImg, function(oldImg, newImg) {
+            // if we enter the anonymous function, we can assume images are not equal
+            if (UserUrl.stopAfterChange) {
+              // set status to false since we are stopping the cronjob
+              UserUrl.status = false;
+              // stop cronjob
+              module.exports.stopCron(UserUrl.user_id, UserUrl.url_id)
+            } else {
+            compareUtils.sendEmail(url, email, oldImg, newImg, sendOption, UserUrl);
+              // update image
+              fs.rename(newImg, oldImg, function(err) {
+                if (err) {
+                  console.log('ERROR:', err);
+                }
+              })
+            }
+            // if images are not equal, send an email
+          });
+
+        } else {
+          compareUtils.compareScreenShot(UserUrl, url, email, params, oldImg, function(oldImg, newImg) {
+            // if we enter the anonymous function, we can assume images are not equal
+            if (UserUrl.stopAfterChange) {
+              // set status to false since we are stopping the cronjob
+              UserUrl.status = false;
+              // stop cronjob
+              module.exports.stopCron(UserUrl.user_id, UserUrl.url_id)
+            } else {
+            compareUtils.sendEmail(url, email, oldImg, newImg, sendOption, UserUrl);
+              // update image
+              fs.rename(oldImg, newImg, function(err) {
+                if (err) {
+                  console.log('ERROR:', err);
+                }
+              })
+            }
+            // if images are not equal, send an email
+          });
+        }
+
+        UserUrl.numScrapes++;
+
+        if (UserUrl.numScrapes >= 100) {
+
+          db.User.findOne({
+            where: {
+              email: UserUrl.email
+            }
+          })
+          .then(function (userFound) {
+
+            if (userFound) {
+
+              db.Url.findOne({
+                where: UserUrl.url
+              })
+              .then(function(urlFound) {
+                if (urlFound) {
+                  var key = UserUrl.user_id.toString() + UserUrl.url_id.toString()
+                  userFound.removeUrl(urlFound);
+                  manager.deleteJob(key);
+                  console.log('cronJob', key, 'stopped!')
+                } else {
+
+                  console.log('error. Url not found in cronController')
+                } 
+              }); 
+            } 
+          }); 
+        }
+
       } else {
         manager.stop()
       }
@@ -107,60 +190,3 @@ module.exports = {
     manager.deleteJob(key);
   },
 };
-
-var compareUtils = {
-  compareOCR: function() {
-    // TODO: take values that are input to it, pass it through compare ocr functions? Should be in basicScroperController?
-  },
-
-  compareScreenShot: function(UserUrl, website, email, params, oldImg) {
-    // gets screenshot of website
-    basicScraper.getScreenshot(website, UserUrl.user_id, function(img1, email) {
-      // crops new image so we can compare the the old cropped image
-      basicScraper.cropImg(img1, params, true, function(newImg) {
-        // checks for difference in pictures
-        console.log('img1 in cropImg', img1);
-        compare(oldImg, newImg, function (equal, oldImg, newImg){
-          if (!equal){
-            // set status to false since we are stopping the cronjob
-            UserUrl.status = false;
-            // stop cronjob
-            module.exports.stopCron(UserUrl.user_id, UserUrl.url_id)
-            // if images are not equal, send an email
-            compareUtils.sendEmail(website, email, oldImg, newImg);
-          }; // if (!equal){
-        }); // compare(img1, img2, function (equal){
-      }); // basicScraper.cropImg(img1, params, true, function(img2) {
-    }, email); // basicScraper.getScreenshot()
-  }, // compareScreenShot: function(UserUrl, website, email, params, oldImg) {
-
-  sendEmail: function(website, email, oldImg, newImg) {
-    console.log('change detected on', website, 'sending email to ', email);
-    // parameters for email
-    var mailOptions = {
-        from: "The Blank Arrays <postmaster@sandbox72a87403dd654630bfa3c4b021cda08d.mailgun.org>", // sender address
-        to: email, // list of receivers
-        subject: 'We found some tubular changes!', // Subject line
-        text: 'Hi there! It looks like we found a change on '+ website + '!', // plaintext body
-        html: "<span>The Scrapinit team found a change on " + website +"!</span>",
-        attachments: [
-        {
-          path: oldImg
-        },
-        {
-          path: newImg
-        }
-        ]
-    };
-    // Send email function
-    // transporter.sendMail(mailOptions, function(error, info){
-    //     if(error){
-    //       console.log(error);
-    //     } else {
-    //       console.log('Message sent: ' + info.response);            
-    //     }; // else statemenet  
-    // }); // transporter.sendMail(mailOptions, function(error, info){
-  } // sendEmail: function(website, email) {
-}
-
-

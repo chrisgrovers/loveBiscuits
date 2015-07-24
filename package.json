@@ -2,9 +2,10 @@
   "name": "Scrapeinit",
   "version": "0.0.0",
   "description": "Scrape",
-  "main": "index.js",
+  "main": "./server/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server/server.js"
   },
   "author": "Scrape",
   "license": "ISC",
@@ -54,5 +55,9 @@
     "karma": "^0.12.35",
     "karma-chrome-launcher": "^0.1.12",
     "karma-jasmine": "^0.3.5"
+  }, 
+  "engines": {
+    "node": "0.12.6",
+    "npm": "2.7.x"
   }
 }

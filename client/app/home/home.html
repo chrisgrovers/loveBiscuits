@@ -1,34 +1,34 @@
-<tour step="currentStep" post-step="stepComplete()">
-  <span tourtip="Copy here the URL that you want"
-        tourtip-step="0"
-        tourtip-next-label="Next"
-        tourtip-placement="left"
-        scrollSpeed="500"
-        tourtip-offset="15">
+<tour step='currentStep' post-step='stepComplete()'>
+  <span tourtip='Copy here the URL that you want'
+        tourtip-step='0'
+        tourtip-next-label='Next'
+        tourtip-placement='left'
+        scrollSpeed='500'
+        tourtip-offset='15'>
   </span>
 </tour>
-<div id="app">
+<div id='app'>
     <div id='page'>
       <header>
-        SCRAPIN´IT
-      </header>
-      <div id="switching">
-        <switch id="enabled" name="enabled" ng-model="enabled" on="Image" off="Text" class="purple">
-      </div>
-      <div id="logout">
-        <button id='signout-button' type ='button' ng-click="logout()">
-          <span class="icon-exit"></span> 
+        <a href="/#/list"><img src='/app/images/logo_alpha.png' /></a>
+      </header id='append'>
+
+      <div id='logout'>
+        <button id='signout-button' type ='button' ng-click='logout()'>
+          <span class='icon-exit'></span>
           Logout
         </button>
       </div>
-      <form id="form__url" ng-submit='add()'>
-        <input type="text" placeholder="http://" name="url" ng-model="url" id="url">
-        <input type="submit" value="SUBMIT"/>
+
+      <form id='form__url' ng-submit='add()'>
+        <input type='url' name='url' ng-model='url' id='url'>
+        <input type='submit' value='Scrape It'/>
+        <span style='color:red' ng-show='url.$error.url'>
+        Sorry Not a Valid URL, Don't Forget to Use http://</span>
       </form>
 
       <hr>
       <ui-view></ui-view>
     </div>
-  
-</div>
 
+</div>
