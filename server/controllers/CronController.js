@@ -22,15 +22,14 @@ module.exports = {
           for (var j=0; j<url.length; j++) {
              var userUrl = url[j].UserUrl;
 
-             // module.exports.startCron(userUrl.user_id, userUrl.url_id);
-             module.exports.addCron(userUrl, url[j].url);
 
-             // var active = userUrl.status;
-             // var url = url[j].url;
-             // if (active) {
-             //   console.log('watching ' + url + ' for ' + userUrl.email)
-             //   module.exports.addCron(userUrl, url);
-             // }; // if (active)
+             var active = userUrl.status;
+             var url = url[j].url;
+             if (active) {
+               console.log('watching ' + url + ' for ' + userUrl.email)
+               module.exports.addCron(userUrl, url[j].url);
+             }; // if (active)
+
           }; // for loop iterating over each url for a user
         }); // .then(function(url){
       }; // or (var i = 0; i < allUsers.length; i++){
