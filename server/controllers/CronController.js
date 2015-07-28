@@ -21,14 +21,17 @@ module.exports = {
         .then(function(url) {
           for (var j=0; j<url.length; j++) {
              var userUrl = url[j].UserUrl;
-
-
-             var active = userUrl.status;
              var url = url[j].url;
-             if (active) {
-               console.log('watching ' + url + ' for ' + userUrl.email)
-               module.exports.addCron(userUrl, url[j].url);
-             }; // if (active)
+             // var active = userUrl.status;
+
+             module.exports.addCron(userUrl, url);
+
+
+             // console.log('active is', active);
+             // if (active) {
+             //   console.log('watching ' + url + ' for ' + userUrl.email)
+             //   module.exports.addCron(userUrl, url[j].url);
+             // }; // if (active)
 
           }; // for loop iterating over each url for a user
         }); // .then(function(url){
