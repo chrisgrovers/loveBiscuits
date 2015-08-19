@@ -23,7 +23,7 @@ module.exports = {
              var userUrl = url[j].UserUrl;
              var url = url[j].url;
              // var active = userUrl.status;
-
+             // userUrl.status = true;
              module.exports.addCron(userUrl, url);
 
 
@@ -41,9 +41,10 @@ module.exports = {
 
   addCron: function(UserUrl, url) {
 
-    UserUrl.status = true;
 
+    console.log('user url', UserUrl);
     var key = UserUrl.url_id.toString() + UserUrl.user_id.toString();
+    console.log('key is', key)
     var freq = UserUrl.frequency;
     var action = UserUrl.compare || 'Image';
 
