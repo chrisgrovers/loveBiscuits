@@ -181,13 +181,13 @@ module.exports = {
 
     // send email function
     console.log("mail options senoptions ", mailOptions[sendOption]);
-    transporter.sendMail(mailOptions[sendOption], function(error, info){
-        if(error){
-          console.log(error);
-        } else {
-          console.log('Message sent: ' + info.response);
-        };
-    });
+    // transporter.sendMail(mailOptions[sendOption], function(error, info){
+    //     if(error){
+    //       console.log(error);
+    //     } else {
+    //       console.log('Message sent: ' + info.response);
+    //     };
+    // });
 
   }
 }
