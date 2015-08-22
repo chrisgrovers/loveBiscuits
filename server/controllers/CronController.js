@@ -33,10 +33,10 @@ module.exports = {
              //   module.exports.addCron(userUrl, url[j].url);
              // }; // if (active)
 
-          }; // for loop iterating over each url for a user
-        }); // .then(function(url){
-      }; // or (var i = 0; i < allUsers.length; i++){
-    }); // .then(function(allUsers) {
+          };
+        });
+      };
+    });
   },
 
   addCron: function(UserUrl, url) {
